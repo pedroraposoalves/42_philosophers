@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/31 21:31:39 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/04 21:36:48 by pemirand         ###   ########.fr       */
+/*   Created: 2025/02/05 17:40:50 by pemirand          #+#    #+#             */
+/*   Updated: 2025/02/10 15:45:52 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ unsigned long int	*check_args(int argc, char **argv)
 	return (res);
 }
 
-long int	get_time_ms(void)
+unsigned long int	get_time_ms(void)
 {
 	struct timeval	tv;
 
@@ -76,45 +76,16 @@ long int	get_time_ms(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-int	ft_wait(long int ms, t_philo *philo)
+int	ft_wait(unsigned long int ms, t_philo *philo)
 {
-	long int	now;
+	unsigned long int	now;
 
 	now = get_time_ms();
 	while (get_time_ms() - now < ms)
 	{
-		if (philo->pgr->dead_flag == 1)
+		if (check_dead_flag(philo->table))
 			return (EXIT_FAILURE);
 		usleep(500);
 	}
 	return (EXIT_SUCCESS);
 }
-
-/*void	print_philo(t_philo *philo)
-{
-	printf("\t\tPhilo ID\t: %d\n", philo->id);
-	printf("\t\tMust eat\t: %d\n", philo->n_times_to_eat);
-	printf("\t\tStart Time\t: %lu\n", philo->pgr->start_time);
-	printf("\t\tLast Meal\t: %lu\n", philo->last_meal);
-}
-
-void	print_pgr(t_pgr *pgr)
-{
-	int	i;
-
-	i = 0;
-	printf("Program :\n\tNR Philosphers\t: %d\n", pgr->n_philos);
-	printf("\tTime to die\t: %lu\n", pgr->time_to_die);
-	printf("\tTime to eat\t: %lu\n", pgr->time_to_eat);
-	printf("\tTime to sleep\t: %lu\n", pgr->time_to_sleep);
-	printf("\tMust Eat\t: %d\n", pgr->n_times_to_eat);
-	printf("\tStart time\t: %lu\n", pgr->start_time);
-	if (pgr->philos == NULL)
-		return ;
-	printf("\n\tPhilos :\n");
-	while (i < pgr->n_philos)
-	{
-		print_philo(pgr->philos[i]);
-		i++;
-	}
-}*/

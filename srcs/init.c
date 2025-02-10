@@ -5,56 +5,38 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/23 14:29:25 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/04 21:08:27 by pemirand         ###   ########.fr       */
+/*   Created: 2025/02/05 17:38:44 by pemirand          #+#    #+#             */
+/*   Updated: 2025/02/10 15:54:36 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	init_mutex(t_pgr *pgr)
-{
-	int	i;
-
-	if (!pgr)
-		return (EXIT_FAILURE);
-	if (!pgr->philos)
-		return (EXIT_FAILURE);
-	i = 0;
-	while (i < pgr->n_philos)
-		pthread_mutex_init(&(pgr->philos[i++]->left_fork), NULL);
-	i = 0;
-	while (i++ < pgr->n_philos)
-	{
-		if (i < pgr->n_philos)
-			pgr->philos[i - 1]->right_fork = &(pgr->philos[i]->left_fork);
-		else
-			pgr->philos[pgr->n_philos - 1]->right_fork = \
-				&(pgr->philos[0]->left_fork);
-	}
-	return (EXIT_SUCCESS);
-}
-
-t_pgr	*new_pgr(unsigned long int n_philos, unsigned long int time_to_die, \
+t_table	*new_table(unsigned long int n_philos, unsigned long int time_to_die, \
 	unsigned long int time_to_eat, unsigned long int time_to_sleep)
 {
-	t_pgr	*pgr;
+	t_table	*table;
 
-	pgr = (t_pgr *)malloc(sizeof(t_pgr));
-	if (!pgr)
+	table = (t_table *)malloc(sizeof(t_table));
+	if (!table)
 		return (NULL);
-	pgr->start_time = get_time_ms();
-	pgr->n_philos = n_philos;
-	pgr->time_to_die = time_to_die;
-	pgr->time_to_eat = time_to_eat;
-	pgr->time_to_sleep = time_to_sleep;
-	pgr->n_times_to_eat = -1;
-	pgr->dead_flag = 0;
-	pgr->philos = NULL;
-	return (pgr);
+	table->n_philos = n_philos;
+	table->time_to_die = time_to_die;
+	table->time_to_eat = time_to_eat;
+	table->time_to_sleep = time_to_sleep;
+	table->eats_to_full = 0;
+	table->full_eaten = 0;
+	table->dead_flag = 0;
+	table->created_threads = 0;
+	table->start_time = 0;
+	pthread_mutex_init(&table->dead_flag_mutex, NULL);
+	pthread_mutex_init(&table->full_eaten_mutex, NULL);
+	pthread_mutex_init(&table->created_threads_mutex, NULL);
+	table->philos = NULL;
+	return (table);
 }
 
-t_philo	*new_philo(int id, t_pgr *pgr)
+t_philo	*new_philo(int id, t_table *table)
 {
 	t_philo	*philo;
 
@@ -62,53 +44,57 @@ t_philo	*new_philo(int id, t_pgr *pgr)
 	if (!philo)
 		return (NULL);
 	philo->id = id;
-	philo->n_times_to_eat = pgr->n_times_to_eat * -1;
-	philo->last_meal = pgr->start_time;
-	philo->pgr = pgr;
+	philo->meals_eaten = 0;
+	philo->last_meal = 0;
+	pthread_mutex_init(&philo->left_fork, NULL);
+	pthread_mutex_init(&philo->last_meal_mutex, NULL);
+	philo->right_fork = NULL;
+	philo->table = table;
 	return (philo);
 }
 
-int	start_pgr(t_pgr *pgr)
+int	init_philos(t_table *table)
 {
 	int	i;
 
-	if (!pgr)
+	if (!table)
 		return (EXIT_FAILURE);
-	pgr->philos = (t_philo **)malloc(sizeof(t_philo *) * pgr->n_philos);
-	if (!pgr->philos)
+	table->philos = (t_philo **)malloc(sizeof(t_philo *) * table->n_philos);
+	if (!table->philos)
 		return (EXIT_FAILURE);
 	i = 0;
-	while (i < pgr->n_philos)
+	while (i < table->n_philos)
 	{
-		pgr->philos[i] = new_philo(i + 1, pgr);
-		if (pgr->philos[i] == NULL)
+		table->philos[i] = new_philo(i + 1, table);
+		if (table->philos[i] == NULL)
 		{
-			free_philos(pgr->philos, pgr->n_philos);
-			pgr->philos = NULL;
+			free_philos(table->philos, table->n_philos);
+			table->philos = NULL;
 			return (EXIT_FAILURE);
 		}
+		if (i > 0)
+			table->philos[i - 1]->right_fork = &table->philos[i]->left_fork;
 		i++;
 	}
-	init_mutex(pgr);
-	i = 0;
+	table->philos[i - 1]->right_fork = &table->philos[0]->left_fork;
 	return (EXIT_SUCCESS);
 }
 
-t_pgr	*init_pgr(int argc, char **argv)
+t_table	*init_table(int argc, char **argv)
 {
-	t_pgr				*pgr;
+	t_table				*table;
 	unsigned long int	*args;
 
 	args = check_args(argc, argv);
 	if (args == NULL)
 		return (NULL);
-	pgr = new_pgr(args[0], args[1], args[2], args[3]);
+	table = new_table(args[0], args[1], args[2], args[3]);
 	if (argc == 6)
-		pgr->n_times_to_eat = args[4];
+		table->eats_to_full = args[4];
 	free(args);
-	if (!pgr)
+	if (!table)
 		return (NULL);
-	if (start_pgr(pgr) == EXIT_FAILURE)
-		return (free_pgr(pgr), NULL);
-	return (pgr);
+	if (init_philos(table) == EXIT_FAILURE)
+		return (free_table(table), NULL);
+	return (table);
 }

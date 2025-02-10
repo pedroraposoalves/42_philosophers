@@ -19,7 +19,7 @@ RM				= rm -rf
 NAME			= philo
 SRC				= srcs
 OBJ_DIR			= objs
-_FILES			= init free utils table
+_FILES			= init free utils table mutex1 mutex2 monitor
 OBJS			= $(_FILES:%=%.o)
 TARGET			= $(addprefix $(OBJ_DIR)/, $(OBJS))
 DEPS			= includes
