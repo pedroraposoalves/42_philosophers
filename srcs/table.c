@@ -6,7 +6,7 @@
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 19:00:38 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/10 15:59:36 by pemirand         ###   ########.fr       */
+/*   Updated: 2025/02/10 17:17:43 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	*philo_routine(void *data)
 	philo = (t_philo *)data;
 	add_created_thread(philo->table);
 	while (check_created_threads(philo->table) != 1)
-		;
+		usleep(10);
 	update_last_meal(philo, philo->table->start_time);
 	while (1)
 	{

@@ -12,7 +12,7 @@ WHITE			= \033[1;37m
 ##########FLAGS##########
 CC				= cc
 #CPFLAGS			= -Wall -Wextra -Werror -g -fsanitize=address
-CPFLAGS			= -Wall -Wextra -Werror -g -fsanitize=thread
+CPFLAGS			= -Wall -Wextra -Werror -g #-fsanitize=thread
 RM				= rm -rf
 
 ##########FILES & FOLDERS##########
