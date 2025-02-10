@@ -6,7 +6,7 @@
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 17:40:50 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/10 15:45:52 by pemirand         ###   ########.fr       */
+/*   Updated: 2025/02/10 17:47:05 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,19 +52,19 @@ unsigned long int	*check_args(int argc, char **argv)
 				(argc - 1));
 		while (i++ < argc)
 		{
-			if (ft_isonlydigits(argv[i - 1]) == EXIT_SUCCESS)
+			if (ft_isonlydigits(argv[i - 1]) == EXIT_SUCCESS \
+				&& ft_atoi(argv[i - 1]) > 0)
 				res[i - 2] = ft_atoi(argv[i - 1]);
 			else
 			{
 				printf("Error: Invalid Args: ");
 				printf("You should submit only numbers bigger than 0\n");
-				free(res);
-				return (NULL);
+				return (free(res), NULL);
 			}
 		}
 	}
 	else
-		printf("Error: Invalid Args: You Should submit 4 or 5 numbers");
+		printf("Error: Invalid Args: You Should submit 4 or 5 numbers\n");
 	return (res);
 }
 
