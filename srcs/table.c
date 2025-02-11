@@ -6,7 +6,7 @@
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 19:00:38 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/10 17:17:43 by pemirand         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:19:35 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,31 +20,27 @@ int	philo_eat(t_philo *philo, pthread_mutex_t *f1, pthread_mutex_t *f2)
 	pthread_mutex_lock(f1);
 	if (check_dead_flag(philo->table))
 		return (pthread_mutex_unlock(f1), res);
-	printf("%ld %d has taken a fork\n", get_time_ms() - \
-			philo->table->start_time, philo->id);
+	print_message(philo->table, 'f', philo->id);
 	if (f1 == f2)
 		return (pthread_mutex_unlock(f1), res);
 	pthread_mutex_lock(f2);
 	update_last_meal(philo, get_time_ms());
 	if (check_dead_flag(philo->table) == 0)
 	{
-		printf("%ld %d has taken a fork\n", \
-			get_time_ms() - philo->table->start_time, philo->id);
-		printf("%ld %d is eating\n", \
-			get_time_ms() - philo->table->start_time, philo->id);
+		print_message(philo->table, 'f', philo->id);
+		print_message(philo->table, 'e', philo->id);
 		philo->meals_eaten++;
 		res = ft_wait(philo->table->time_to_eat, philo);
 	}
-	pthread_mutex_unlock(f1);
-	return (pthread_mutex_unlock(f2), res);
+	pthread_mutex_unlock(f2);
+	return (pthread_mutex_unlock(f1), res);
 }
 
 int	philo_sleep(t_philo *philo)
 {
 	if (check_dead_flag(philo->table) == 0)
 	{
-		printf("%ld %d is sleeping\n", \
-			get_time_ms() - philo->table->start_time, philo->id);
+		print_message(philo->table, 's', philo->id);
 		return (ft_wait(philo->table->time_to_sleep, philo));
 	}
 	return (EXIT_FAILURE);
@@ -54,8 +50,7 @@ int	philo_think(t_philo *philo)
 {
 	if (check_dead_flag(philo->table) == 0)
 	{
-		printf("%ld %d is thinking\n", \
-			get_time_ms() - philo->table->start_time, philo->id);
+		print_message(philo->table, 't', philo->id);
 		return (EXIT_SUCCESS);
 	}
 	return (EXIT_FAILURE);
@@ -70,7 +65,6 @@ void	*philo_routine(void *data)
 	add_created_thread(philo->table);
 	while (check_created_threads(philo->table) != 1)
 		usleep(10);
-	update_last_meal(philo, philo->table->start_time);
 	while (1)
 	{
 		if (philo->id % 2 == 1)

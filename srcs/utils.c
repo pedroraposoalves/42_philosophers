@@ -6,7 +6,7 @@
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 17:40:50 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/10 17:47:05 by pemirand         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:11:11 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ int	ft_isonlydigits(char *str)
 	return (EXIT_SUCCESS);
 }
 
-unsigned long int	ft_atoi(char *str)
+unsigned long	ft_atoi(char *str)
 {
-	unsigned long int	res;
+	unsigned long	res;
 
 	res = 0;
 	while (*str)
@@ -39,16 +39,16 @@ unsigned long int	ft_atoi(char *str)
 	return (res);
 }
 
-unsigned long int	*check_args(int argc, char **argv)
+unsigned long	*check_args(int argc, char **argv)
 {
-	unsigned long int	*res;
-	int					i;
+	unsigned long	*res;
+	int				i;
 
 	res = NULL;
 	if (argc > 4 && argc < 7)
 	{
 		i = 1;
-		res = (unsigned long int *)malloc(sizeof(unsigned long int) * \
+		res = (unsigned long *)malloc(sizeof(unsigned long) * \
 				(argc - 1));
 		while (i++ < argc)
 		{
@@ -68,7 +68,7 @@ unsigned long int	*check_args(int argc, char **argv)
 	return (res);
 }
 
-unsigned long int	get_time_ms(void)
+unsigned long	get_time_ms(void)
 {
 	struct timeval	tv;
 
@@ -76,9 +76,9 @@ unsigned long int	get_time_ms(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-int	ft_wait(unsigned long int ms, t_philo *philo)
+int	ft_wait(unsigned long ms, t_philo *philo)
 {
-	unsigned long int	now;
+	unsigned long	now;
 
 	now = get_time_ms();
 	while (get_time_ms() - now < ms)

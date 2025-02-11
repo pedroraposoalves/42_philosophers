@@ -6,14 +6,14 @@
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 17:38:44 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/10 15:54:36 by pemirand         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:12:09 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-t_table	*new_table(unsigned long int n_philos, unsigned long int time_to_die, \
-	unsigned long int time_to_eat, unsigned long int time_to_sleep)
+t_table	*new_table(unsigned long n_philos, unsigned long time_to_die, \
+	unsigned long time_to_eat, unsigned long time_to_sleep)
 {
 	t_table	*table;
 
@@ -29,6 +29,7 @@ t_table	*new_table(unsigned long int n_philos, unsigned long int time_to_die, \
 	table->dead_flag = 0;
 	table->created_threads = 0;
 	table->start_time = 0;
+	pthread_mutex_init(&table->print_mutex, NULL);
 	pthread_mutex_init(&table->dead_flag_mutex, NULL);
 	pthread_mutex_init(&table->full_eaten_mutex, NULL);
 	pthread_mutex_init(&table->created_threads_mutex, NULL);
@@ -82,8 +83,8 @@ int	init_philos(t_table *table)
 
 t_table	*init_table(int argc, char **argv)
 {
-	t_table				*table;
-	unsigned long int	*args;
+	t_table			*table;
+	unsigned long	*args;
 
 	args = check_args(argc, argv);
 	if (args == NULL)

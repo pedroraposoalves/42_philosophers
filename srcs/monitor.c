@@ -6,7 +6,7 @@
 /*   By: pemirand <pemirand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 19:36:55 by pemirand          #+#    #+#             */
-/*   Updated: 2025/02/10 17:17:08 by pemirand         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:27:04 by pemirand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,7 @@ void	monitor(t_table *table)
 		dead_philo = check_dead_philos(table) + 1;
 		if (dead_philo > 0)
 		{
-			printf("%lu %d died\n", \
-				get_time_ms() - table->start_time, dead_philo);
-			set_dead_flag(table, 1);
+			print_message(table, 'd', dead_philo);
 			return ;
 		}
 		if (check_full_eaten(table))
